@@ -38,7 +38,7 @@ class MVAR_controller extends CI_Controller {
 		} else if ( $_SERVER['HTTP_HOST'] == LIVE_HTTP_HOST ) {
 			// linux - centos
 			// conda weather_analysis_with_tf env 
-			$commend = DS . "root". DS."anaconda3" . DS . "envs". DS. "weather_analysis_with_tf" . DS . "bin". DS. "python " . APPPATH . "pycode" .DS . $src . " $args";
+			$commend = DS . "root". DS."anaconda3" . DS . "envs". DS. "weather_analysis_with_tf" . DS . "bin". DS. "python " . APPPATH . "pycode" .DS . $src . " \"$args\"";
 			$py_return = exec($commend);
 		}
 
