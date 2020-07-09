@@ -1,7 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Mvar_controller extends CI_Controller {
+class MVAR_controller extends CI_Controller {
+	private $stock_model;
+
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->load->model("MVAR_model");
+
+		$this->mvar_model = $this->MVAR_model;
+	}
 
 	/**
 	 * Index Page for this controller.
@@ -32,7 +42,7 @@ class Mvar_controller extends CI_Controller {
 			$py_return = exec($commend);
 		}
 
-		
+
 		return json_decode($py_return);
 	}
 
@@ -55,6 +65,14 @@ class Mvar_controller extends CI_Controller {
 
 	public function ajax_get_stocks()
 	{
+		$get = $this->input->get();
 
+		$r_date_s = $get["r_date_s"];
+		$bt_date_e = $get["bt_date_e"];
+		$stock_sch_content = $get["stock_sch_content"];
+
+		$stock_data = $this->mvar_model->get_stock_data($r_date_s, $bt_date_e, $stock_sch_content);
+
+		print(json_encode($stock_data));
 	}
 }
