@@ -31,11 +31,11 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/results/
 user_guide
 .vscode
-application/logs
 contributing.md
 license.txt
 readme.rst
 logs
+!.htaccess
 
 
 

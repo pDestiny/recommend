@@ -83,3 +83,20 @@ defined('EXIT_USER_INPUT')     OR define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+
+
+### custom constants ###
+
+if ( empty($_SERVER['HTTPS']) OR strtolower($_SERVER['HTTPS']) === 'off' ) {
+	define('HTTP_PROTOCOL', 'http://');
+	define('IS_HTTPS', false);
+} else {
+	define('HTTP_PROTOCOL', 'https://');
+	define('IS_HTTPS', true);	
+}
+
+define('LOCAL_HTTP_HOST', 'test-recommend.xyz:3301');
+define('DEV_HTTP_HOST', '<writeHereUrl>');
+define('LIVE_HTTP_HOST', 'pdestiny.xyz');
+define("DS", DIRECTORY_SEPARATOR);
