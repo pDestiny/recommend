@@ -52,4 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'MVAR_controller'; 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route["mvar/result/(:num)"] = "MVAR_controller/result/$1";
+$route["mvar/delete/(:num)"] = "MVAR_controller/delete/$1";
 $route["mvar/(:any)"] = "MVAR_controller/$1";

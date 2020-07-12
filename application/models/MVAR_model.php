@@ -1,5 +1,6 @@
 <?php 
 class MVAR_model extends CI_Model {
+    protected $TB;
     protected $builder;
     
     
@@ -7,7 +8,7 @@ class MVAR_model extends CI_Model {
         parent::__construct();
 
         $this->load->database();
-        $this->builder = $this->db->from("stock_data");    
+        $this->TB = "stock_data";
     }
 
     public function get_stock_data($r_date_s, $bt_date_e, $stock_sch_content)

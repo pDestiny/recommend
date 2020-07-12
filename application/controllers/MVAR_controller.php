@@ -8,9 +8,9 @@ class MVAR_controller extends CI_Controller {
 	{
 		parent::__construct();
 
-		$this->load->model("MVAR_model");
-
-		$this->mvar_model = $this->MVAR_model;
+		$this->load->model("MVAR_model", "mvar_model");
+		$this->load->model("Analysis_params_model", "ap_model");
+		$this->load->model("Analysis_result_model", "ar_model");
 	}
 
 	/**
@@ -48,19 +48,72 @@ class MVAR_controller extends CI_Controller {
 
 	public function index()
 	{
+		//인덱스에서 시뮬레이션을 시작하면 로딩페이지로 이동
 		$this->load->view('input');
 	}
-	
 
-	public function result()
+	public function loading()
 	{
 		$post = $this->input->post();
 
-		$py_return = $this->_python_exec("back_test.py", $post);
+		$idata =[
+            "ap_name" => $post["anlysis_name"],
+			"ap_desc" => $post["desc"],
+			"ap_asset" => $post["asset"],
+            "ap_r_dt_s" => $post["r_dt_s"],
+            "ap_r_dt_e" => $post["r_dt_e"],
+            "ap_bt_dt_s" => $post["bt_dt_s"],
+            "ap_bt_dt_e" => $post["bt_dt_e"],
+            "ap_interval" => $post["interval"],
+            "ap_eta" => $post["eta"],
+            "ap_max_iter" => $post["max_iter"],
+			"ap_is_finish" => 0
+		];
+		
+		// $this->ap_model->save($idata, $post["stock_id"]);
+		$ap_id = $this->ap_model->save($idata, $post["stock_id"]);
+		
+		//loading page 에서 index에서 넘긴 파라미터를 db 저장
 
-		$this->load->view("result", array(
-			"DATA" => $py_return
-		));
+		//loading page 에서는 한 기업당 1 에포치의 시간을 11초로 잡고 progress bar 실행
+		$n = count($post["stock_id"]);
+		
+		$epoches_n = $this->ap_model->get_epoch_n($ap_id, $idata["ap_interval"]);
+
+		$time_exp = $n * $epoches_n * intval($idata["ap_max_iter"])  * 1 / 300 * 1000; // millisec 단위
+
+		$this->load->view("loading",[
+			"time_exp" => $time_exp,
+			"id" => $ap_id 
+		]);
+		//progress bar가 끝나면, ajax로 분석이 끝났는지를 3초 간격으로 확인
+		
+		//만일 끝났다면 result 페이지로 이동
+		
+	}
+
+	public function ajax_is_analysis_finished()
+	{
+		$analysis_id = $this->input->get("analysis_id");
+
+		$is_finish = $this->ap_model->is_finish($analysis_id);
+
+		# 실제 분석이 끝났는지 확인
+		print(json_encode([
+			"is_finish" => true
+		]));
+		
+	}
+
+	private function ajax_analysis_start()
+	{
+		$py_return = $this->_python_exec("back_test.py", $post);
+		# code...
+	}
+
+	public function result($id)
+	{
+		$this->load->view("result");
 	}
 
 	public function ajax_get_stocks()
@@ -74,5 +127,29 @@ class MVAR_controller extends CI_Controller {
 		$stock_data = $this->mvar_model->get_stock_data($r_date_s, $bt_date_e, $stock_sch_content);
 
 		print(json_encode($stock_data));
+	}
+
+	public function ajax_dup_check()
+	{
+		$ap_name = $this->input->get("ap_name");
+
+		$is_unique = $this->ap_model->is_unique($ap_name);
+
+		print(json_encode(["is_unique" => $is_unique]));
+	}
+
+	public function list()
+	{
+		$all_analysis_list = $this->ap_model->all();
+		$this->load->view("list", [
+			"data" => $all_analysis_list
+		]);
+	}
+
+	public function delete($id)
+	{
+		$this->ap_model->del($id);
+
+		$this->list();
 	}
 }
