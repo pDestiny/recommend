@@ -141,14 +141,14 @@ window.chartColors = {
 					label: 'MVAR',
 					backgroundColor: window.chartColors.red,
 					borderColor: window.chartColors.red,
-					data: _.map(graph_data.income.mvar, d => d.income_rate),
+					data: _.map(graph_data.income.mvar, d => d.ar_remain_assets),
 					fill: false,
 				}, {
 					label: 'Ant',
 					fill: false,
 					backgroundColor: window.chartColors.blue,
 					borderColor: window.chartColors.blue,
-					data: _.map(graph_data.income.ant, d => d.income_rate),
+					data: _.map(graph_data.income.ant, d => d.ar_remain_assets),
 				}]
 			},
 			options: {

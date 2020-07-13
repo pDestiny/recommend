@@ -19,7 +19,7 @@ class Analysis_result_model extends CI_Model {
                     ar_kind, 
                     ar_epoch,
                     round(((SUM(ar_remain_assets) - SUM(ar_start_assets)) / SUM(ar_start_assets) * 100), 2) AS income_rate, 
-                    SUM(ar_remain_assets) as ar_remain_assets
+                    round(SUM(ar_remain_assets), 2) as ar_remain_assets
                 FROM analysis_result 
                     WHERE ar_ap_id = ? and ar_kind = 'MVAR' 
                     GROUP BY ar_kind, ar_epoch";
@@ -30,7 +30,7 @@ class Analysis_result_model extends CI_Model {
                     ar_kind, 
                     ar_epoch,
                     round(((SUM(ar_remain_assets) - SUM(ar_start_assets)) / SUM(ar_start_assets) * 100), 2) AS income_rate, 
-                    SUM(ar_remain_assets) as ar_remain_assets 
+                    round(SUM(ar_remain_assets),2) as ar_remain_assets 
                 FROM analysis_result 
                     WHERE ar_ap_id = ? and ar_kind = 'ant' 
                     GROUP BY ar_kind, ar_epoch";
@@ -44,7 +44,7 @@ class Analysis_result_model extends CI_Model {
                     ar_kind, 
                     ar_epoch,
                     round(((SUM(ar_remain_assets) - SUM(ar_start_assets)) / SUM(ar_start_assets) * 100), 2) AS income_rate, 
-                    SUM(ar_remain_assets) 
+                    round(SUM(ar_remain_assets), 2) as ar_remain_assets 
                 FROM analysis_result 
                     WHERE ar_ap_id = ? 
                     GROUP BY ar_kind, ar_epoch
