@@ -28,22 +28,23 @@ class MVAR_controller extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
-	protected function _python_exec($src, $args) {
+	private function _python_exec($src, $args) {
 		$args = json_encode($args);
 		if ( $_SERVER['HTTP_HOST'] == LOCAL_HTTP_HOST ) {
 			// window
 			$commend = "python ". APPPATH. DS. "pycode". DS. $src. " $args";
+			print_r($commend);
 			$py_return = exec($commend);
 
 		} else if ( $_SERVER['HTTP_HOST'] == LIVE_HTTP_HOST ) {
 			// linux - centos
 			// conda weather_analysis_with_tf env 
-			$commend = DS . "root". DS."anaconda3" . DS . "envs". DS. "weather_analysis_with_tf" . DS . "bin". DS. "python " . APPPATH . "pycode" .DS . $src . " \"$args\"";
+			$commend = DS . "root". DS."anaconda3" . DS . "envs". DS. "weather_analysis_with_tf" . DS . "bin". DS. "python " . APPPATH . "pycode" .DS . $src . " $args";
 			$py_return = exec($commend);
 		}
 
 
-		return json_decode($py_return);
+		return $py_return;
 	}
 
 	public function index()
@@ -80,7 +81,7 @@ class MVAR_controller extends CI_Controller {
 		
 		$epoches_n = $this->ap_model->get_epoch_n($ap_id, $idata["ap_interval"]);
 
-		$time_exp = $n * $epoches_n * intval($idata["ap_max_iter"])  * 1 / 300 * 1000; // millisec 단위
+		$time_exp = ($n * 24 + $n * $epoches_n * intval($idata["ap_max_iter"])  * 1 / 300) * 1000 + 14000; // millisec 단위
 
 		$this->load->view("loading",[
 			"time_exp" => $time_exp,
@@ -100,20 +101,34 @@ class MVAR_controller extends CI_Controller {
 
 		# 실제 분석이 끝났는지 확인
 		print(json_encode([
-			"is_finish" => true
+			"is_finish" => $is_finish
 		]));
 		
 	}
 
-	private function ajax_analysis_start()
+	public function ajax_analysis_start($id)
 	{
-		$py_return = $this->_python_exec("back_test.py", $post);
-		# code...
+		print_r($id);
+		$py_return = $this->_python_exec("back_test.py", $id);
+
+		print_r($py_return);
 	}
 
 	public function result($id)
 	{
-		$this->load->view("result");
+		$params = $this->ap_model->get_one($id);
+
+		$n = $this->ap_model->get_n_stocks($id);
+		
+		$result_data = $this->mvar_model->get_analysis_result($id);
+
+		$this->load->view("result", [
+			"params"=> $params,
+			"result_data" => $result_data,
+			"n" => $n
+		]);
+
+		$this->load->view("chartjs_script");
 	}
 
 	public function ajax_get_stocks()

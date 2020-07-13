@@ -11,6 +11,11 @@ class Analysis_params_model extends CI_Model {
         $this->SUB = "analysis_stocks";   
     }
 
+    public function get_one($id)
+    {
+        return $this->db->from($this->TB)->select("*")->where("ap_id", $id)->get()->row_array();
+    }
+
     public function all()
     {
         return $this->db->select("*")->get($this->TB)->result_array();
@@ -63,5 +68,14 @@ class Analysis_params_model extends CI_Model {
         $this->db->delete($this->SUB, [
             "as_ap_id" => $id
         ]);
+    }
+    public function get_n_stocks($id)
+    {
+        return $this->db->from($this->SUB)->select("count(*) as c")->where("as_ap_id", $id)->get()->row_array()['c'];
+    }
+
+    public function get_codes($id)
+    {
+        return $this->db->from($this->SUB)->select("as_code")->where("as_ap_id", $id)->get()->result_array();
     }
 }

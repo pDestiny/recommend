@@ -4,9 +4,11 @@ import pandas as pd
 import joblib
 import seaborn as sns
 import matplotlib.pyplot as plt
-from datetime import timedelta
+from datetime import timedelta, datetime
 from time import time
 import pymysql as mydb
+import sys
+import json
 
 
 def hr(saying):
@@ -191,75 +193,88 @@ def back_test(data, asset, r_dt_s, r_dt_e, bt_dt_s, bt_dt_e, interval=30, eta_hy
 
 
 # id 값으로 params 데이터를 로드 
+ap_id = int(sys.argv[1])
 
 
 
+conn = mydb.connect(host="pdestiny.xyz", user="user1", password="0410s", db="stock_analysis")
 
-if __name__ == "__main__":
-    ap_id = 47
 
-    conn = mydb.connect(host="pdestiny.xyz", user="user1", password="0410s", db="stock_analysis")
 
-    cur = conn.cursor()
+cur = conn.cursor()
 
-    params = None
+params = None
 
-    cur.execute("""
-        SELECT * FROM analysis_params where ap_id = %s
-    """, (ap_id))
+cur.execute("""
+    SELECT * FROM analysis_params where ap_id = %s
+""", (ap_id))
 
-    result = cur.fetchone()
+result = cur.fetchone()
 
-    print(result)
 
-    _, name, _, asset, r_dt_s, r_dt_e, bt_dt_s, bt_dt_e, interval, eta, max_iter, *_ = result
 
-    stock_codes = []
+_, name, _, asset, r_dt_s, r_dt_e, bt_dt_s, bt_dt_e, interval, eta, max_iter, *_ = result
 
-    cur.execute("""
-        select * from analysis_stocks where as_ap_id = %s
-    """, (ap_id))
-    
-    for code in cur.fetchall():
-        stock_codes.append(code[1])
+stock_codes = []
 
-    print(stock_codes)
 
-    in_data = " or ".join(["code = %s" for _ in range(len(stock_codes))])
 
-    print(in_data)
+cur.execute("""
+    select * from analysis_stocks where as_ap_id = %s
+""", (ap_id))
 
+for code in cur.fetchall():
+    stock_codes.append(code[1])
+
+in_data = " or ".join(["code = %s" for _ in range(len(stock_codes))])
+
+# print(in_data)
+
+# print(stock_codes)
+
+
+sql = f"""
+    select name, code, date, close from stock_data where ({in_data}) 
+"""
+
+print(sql)
+
+stock_df = pd.DataFrame(columns = ["Name", "Code", "Date", "Close"])
+s_time = time()
+cur.execute(sql, stock_codes)
+limit = 4
+for stock_data in cur.fetchall():
+    row = {
+        "Name": stock_data[0],
+        "Code": stock_data[1],
+        "Date": stock_data[2],
+        "Close": stock_data[3]
+    }
+    stock_df = stock_df.append(row, ignore_index=True)
+e_time = time()
+
+#print(f"data loading time exp : {e_time - s_time}")
+
+
+stock_df["Date"] = stock_df["Date"].astype("datetime64[ns]")
+
+bt_result = back_test(stock_df, asset, r_dt_s, r_dt_e, bt_dt_s, bt_dt_e, interval, eta, max_iter)
+
+for data in bt_result.iterrows():
+    idata = [ap_id] + data[1].to_list()
+    values = ",".join(["%s" for _ in idata])
     sql = f"""
-        select name, code, date, close from stock_data where ({in_data}) 
+        insert into analysis_result values ({values})
     """
+    cur.execute(sql, idata)
+update_is_finish_sql = f"""
+    update analysis_params set ap_is_finish = 1 where ap_id = %s
+"""
 
-    print(sql)
+cur.execute(update_is_finish_sql, (ap_id))
 
-    stock_df = pd.DataFrame(columns = ["Name", "Code", "Date", "Close"])
+conn.commit()
 
-    cur.execute(sql, stock_codes)
-    limit = 4
-    for stock_data in cur.fetchall():
-        row = {
-            "Name": stock_data[0],
-            "Code": stock_data[1],
-            "Date": stock_data[2],
-            "Close": stock_data[3]
-        }
-        stock_df = stock_df.append(row, ignore_index=True)
 
-    stock_df["Date"] = stock_df["Date"].astype("datetime64[ns]")
-
-    bt_result = back_test(stock_df, asset, r_dt_s, r_dt_e, bt_dt_s, bt_dt_e, interval, eta, max_iter)
-
-    for data in bt_result.iterrows():
-        idata = [ap_id] + data[1].to_list()
-        values = ",".join(["%s" for _ in idata])
-        sql = f"""
-            insert into analysis_result values ({values})
-        """
-        cur.execute(sql, idata)
-
-    conn.commit()
 
         

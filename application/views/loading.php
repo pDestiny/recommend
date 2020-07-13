@@ -1,7 +1,7 @@
 <?php require_once "header.php"?>
 
 <body>
-    <?=$time_exp?>
+    <?=round($time_exp / 60000). "분 " . round(($time_exp % 60000) / 1000). "초 남았습니다. 기다려 주세요."?>
     <div id="myProgress">
         <div id="myBar"></div>
     </div>
@@ -10,6 +10,10 @@
 <?php require_once "script.php"?>
 <script>
     (function() {
+        function start_analysis() {
+            $.get("/mvar/ajax_analysis_start/<?=$id?>");
+        }
+
         function move() {
             function call_result() {
                 $.getJSON("/mvar/ajax_is_analysis_finished",{
@@ -18,10 +22,10 @@
                     if(result.is_finish == true) {
                         clearInterval(finish_interval_id)
                         location.href="/mvar/result/<?=$id?>"
-                        is_first = false;
                     } else {
                         if(is_first == true) {
                             alert("아직 진행중입니다. 알림창을 끄고 기다려 주세요");
+                            is_first = false;
                         }
                     }
                 });
@@ -52,7 +56,7 @@
 
         let d = new Date();
         let past_millis = d.getTime();
-
+        start_analysis()
         move(past_millis);
         
     })()
