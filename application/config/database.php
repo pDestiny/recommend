@@ -75,7 +75,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'pdestiny.xyz',
+	'hostname' => $_SERVER['HTTP_HOST'] == LIVE_HTTP_HOST ? "localhost" : LIVE_HTTP_HOST,
 	'username' => 'user1',
 	'password' => '0410s',
 	'database' => 'stock_analysis',
