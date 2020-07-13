@@ -78,4 +78,20 @@ class Analysis_params_model extends CI_Model {
     {
         return $this->db->from($this->SUB)->select("as_code")->where("as_ap_id", $id)->get()->result_array();
     }
+
+    public function is_analyzed($name)
+    {
+        return ($this->db->
+                    select("ap_is_finish")->
+                    from($this->TB)->
+                    where("ap_name", $name)->
+                    get()->
+                    row_array()["ap_is_finish"]) == 1;
+    }
+
+    public function is_saved($name)
+    {
+        return count($this->db->select("*")->from($this->TB)->where("ap_name", $name)->get()->result_array()) >= 1;
+    }
+
 }

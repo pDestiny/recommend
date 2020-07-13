@@ -7,51 +7,41 @@
 		<div class="con">
 			<form action="mvar/loading" method="post" id="param_form">
 				<div class="box">
-					<label>분석 ID</label><input type="text" name="anlysis_name" id="anlysis_name" name="asset" required value="test-ap-name-1" maxlength="255"><button type="button" id="dup-check">중복검사</button>
+					<label>분석 ID</label><input type="text" name="anlysis_name" id="anlysis_name" name="asset" required maxlength="255"><button type="button" id="dup-check">중복검사</button>
 				</div>
 				<div class="box">
-					<label>설명</label><input type="text" id="desc" name="desc" value="description" maxlength="63">
+					<label>설명</label><input type="text" id="desc" name="desc" maxlength="63">
 				</div>
 				<div class="box">
-					<label>기초자산</label><input type="text" id="asset" name="asset" required value="1000000">
+					<label>기초자산</label><input type="text" id="asset" name="asset" required>
 				</div>
 				<div class="box">
 					<label>이익률 계산 기간</label>
-					<input type="text" id="r_dt_s" name="r_dt_s" placeholder="시작날짜" required autocomplete="off" value="2017-12-01">
+					<input type="text" id="r_dt_s" name="r_dt_s" placeholder="시작날짜" required autocomplete="off" >
 					~
-					<input type="text" id="r_dt_e" name="r_dt_e" placeholder="종료날짜" required autocomplete="off" value="2018-01-01">
+					<input type="text" id="r_dt_e" name="r_dt_e" placeholder="종료날짜" required autocomplete="off" >
 				</div>
 				<div class="box">
 					<label>백테스팅 기간</label>
-					<input type="text" id="bt_dt_s" name="bt_dt_s" placeholder="시작날짜" required autocomplete="off" value="2018-01-01">
+					<input type="text" id="bt_dt_s" name="bt_dt_s" placeholder="시작날짜" required autocomplete="off" >
 					~
-					<input type="text" id="bt_dt_e" name="bt_dt_e" placeholder="종료날짜" required autocomplete="off" value="2018-03-01">
+					<input type="text" id="bt_dt_e" name="bt_dt_e" placeholder="종료날짜" required autocomplete="off" >
 				</div>
 				<div class="box">
 					<label>주식 선택</label><input type="text" id="sch-target"><button type="button" class="search-stock">주식 검색</button>
 					<div id="stock-box">
-						<div class="stock-select">
-							<input type="checkbox" name="stock_id[]" id="sp660" value="660">
-							<label for="sp660">SK하이닉스</label>
-						</div><div class="stock-select">
-							<input type="checkbox" name="stock_id[]" id="sp1040" value="1040">
-							<label for="sp1040">CJ</label>
-						</div><div class="stock-select">
-							<input type="checkbox" name="stock_id[]" id="sp69730" value="69730">
-							<label for="sp69730">DSR제강</label>
-						</div></div>
 					</div>
 				</div>
 				<div class="box">
-					<label>비중 리밸런싱 인터벌</label> <input type="text" name="interval" value="30"> days
+					<label>비중 리밸런싱 인터벌</label> <input type="text" name="interval"> days
 				</div>
 
 				<div class="box">
-					<label>러닝 레이트(ETA)</label><input type="text" name="eta" value=.5>
+					<label>러닝 레이트(ETA)</label><input type="text" name="eta">
 				</div>
 
 				<div class="box">
-					<label>최대 이터레이션 횟수</label><input type="text" name="max_iter" value="2000">
+					<label>최대 이터레이션 횟수</label><input type="text" name="max_iter">
 				</div>
 				<div class="btns">
 					<button type="button" class="start_sim">시뮬레이션 수행</button>

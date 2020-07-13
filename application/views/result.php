@@ -212,7 +212,7 @@
     </div>
 
     <div class="btn">
-
+        <button class="back" type="button" onclick="location.href='/mvar/list'">뒤로</button>
     </div>
 
 </body>

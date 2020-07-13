@@ -31,7 +31,6 @@
                 });
             }
             function frame() {
-                console.log('hello world')
                 if (width >= 100) {
                     clearInterval(id);
                     is_first = true

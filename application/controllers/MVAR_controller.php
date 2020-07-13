@@ -8,7 +8,7 @@ class MVAR_controller extends CI_Controller {
 	{
 		parent::__construct();
 
-		$this->load->model("MVAR_model", "mvar_model");
+		$this->load->model("Stock_data_model", "sp_model");
 		$this->load->model("Analysis_params_model", "ap_model");
 		$this->load->model("Analysis_result_model", "ar_model");
 	}
@@ -33,7 +33,7 @@ class MVAR_controller extends CI_Controller {
 		if ( $_SERVER['HTTP_HOST'] == LOCAL_HTTP_HOST ) {
 			// window
 			$commend = "python ". APPPATH. DS. "pycode". DS. $src. " $args";
-			print_r($commend);
+			#print_r($commend);
 			$py_return = exec($commend);
 
 		} else if ( $_SERVER['HTTP_HOST'] == LIVE_HTTP_HOST ) {
@@ -70,9 +70,18 @@ class MVAR_controller extends CI_Controller {
             "ap_max_iter" => $post["max_iter"],
 			"ap_is_finish" => 0
 		];
+
+
+		if($this->ap_model->is_analyzed($idata["ap_name"]) || $this->ap_model->is_saved($idata["ap_name"])) {
+			print("<script>alert('이미 분석되었거나 분석중입니다..');location.href='/mvar/list';</script>");
+			return;
+		}
+
+		$ap_id = $this->ap_model->save($idata, $post["stock_id"]);
+
 		
 		// $this->ap_model->save($idata, $post["stock_id"]);
-		$ap_id = $this->ap_model->save($idata, $post["stock_id"]);
+		
 		
 		//loading page 에서 index에서 넘긴 파라미터를 db 저장
 
@@ -120,7 +129,7 @@ class MVAR_controller extends CI_Controller {
 
 		$n = $this->ap_model->get_n_stocks($id);
 		
-		$result_data = $this->mvar_model->get_analysis_result($id);
+		$result_data = $this->ar_model->get_analysis_result($id);
 
 		$this->load->view("result", [
 			"params"=> $params,
@@ -139,7 +148,7 @@ class MVAR_controller extends CI_Controller {
 		$bt_date_e = $get["bt_date_e"];
 		$stock_sch_content = $get["stock_sch_content"];
 
-		$stock_data = $this->mvar_model->get_stock_data($r_date_s, $bt_date_e, $stock_sch_content);
+		$stock_data = $this->sp_model->get_stock_data($r_date_s, $bt_date_e, $stock_sch_content);
 
 		print(json_encode($stock_data));
 	}
@@ -164,6 +173,8 @@ class MVAR_controller extends CI_Controller {
 	public function delete($id)
 	{
 		$this->ap_model->del($id);
+
+		$this->ar_model->del($id);
 
 		$this->list();
 	}
