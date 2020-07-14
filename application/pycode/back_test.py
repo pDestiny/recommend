@@ -21,7 +21,7 @@ def mvar_gd(data, r_dt_s, r_dt_e, eta_hyper, max_iter):
     # 수익률 백터
     grouped = data.groupby(["Name", "Code"])
     
-    income_rate_pct_change = pd.DataFrame(columns=["Name", "Code", "pct_change"])
+    income_rate_pct_change = pd.DataFrame(columns=["Name", "Code", "pct_change"], dtype=np.float)
     
     income_rate_v = []
     
@@ -48,7 +48,9 @@ def mvar_gd(data, r_dt_s, r_dt_e, eta_hyper, max_iter):
     n = len(income_var_v)
     
     # stochastic weight selection
-    weights = np.array([1 / n for _ in range(n)])
+    initial_weights = np.array([1 / n for _ in range(n)])
+    
+    weights = initial_weights.copy()
     
     # 분산 공식 작성. w1 ~ wk 까지
     W = sym.symbols(" ".join(["w" + str(num) for num in range(1, n + 1)]))
@@ -85,8 +87,12 @@ def mvar_gd(data, r_dt_s, r_dt_e, eta_hyper, max_iter):
     
     weight_result["name"] = income_var["Name"]
     weight_result["code"] = income_var["Code"]
+    hr("initial_weights")
+    print(initial_weights)
+    hr("weights")
+    print(weight)
     
-    weight_result["weight"] =  weight / np.sum(weight)
+    weight_result["weight"] =  np.abs(initial_weights - weight) / np.sum(np.abs(initial_weights - weight))
     # result data decorating
     
     return weight_result
@@ -240,6 +246,7 @@ sql = f"""
 print(sql)
 
 stock_df = pd.DataFrame(columns = ["Name", "Code", "Date", "Close"])
+stock_df.dropna(inplace=True)
 s_time = time()
 cur.execute(sql, stock_codes)
 limit = 4
@@ -259,6 +266,8 @@ e_time = time()
 stock_df["Date"] = stock_df["Date"].astype("datetime64[ns]")
 
 bt_result = back_test(stock_df, asset, r_dt_s, r_dt_e, bt_dt_s, bt_dt_e, interval, eta, max_iter)
+
+print(bt_result)
 
 for data in bt_result.iterrows():
     idata = [ap_id] + data[1].to_list()

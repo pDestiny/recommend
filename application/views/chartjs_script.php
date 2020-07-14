@@ -155,7 +155,7 @@ window.chartColors = {
 				responsive: true,
 				title: {
 					display: true,
-					text: 'Income rate comparision'
+					text: 'Remain Assets Comparision'
 				},
 				tooltips: {
 					mode: 'index',

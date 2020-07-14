@@ -33,7 +33,7 @@ class MVAR_controller extends CI_Controller {
 		if ( $_SERVER['HTTP_HOST'] == LOCAL_HTTP_HOST ) {
 			// window
 			$commend = "python ". APPPATH. DS. "pycode". DS. $src. " $args";
-			#print_r($commend);
+			print_r($commend);
 			$py_return = exec($commend);
 
 		} else if ( $_SERVER['HTTP_HOST'] == LIVE_HTTP_HOST ) {
