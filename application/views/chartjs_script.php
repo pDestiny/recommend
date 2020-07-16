@@ -232,6 +232,54 @@ window.chartColors = {
 			}
 		};
 		
+		var config3 = {
+			type: 'line',
+			data: {
+				labels: _.chain(graph_data.bt_period_stock_data).orderBy(["date"], ["asc"]).map((val, key) => val.date).uniq().value(),
+				datasets: _.chain(graph_data.bt_period_stock_data.grouped_stock_data).map((val, key) => {
+					color = Samples.utils.color(Math.round(Math.random() * 10))
+					return {
+						label: key,
+						backgroundColor: color,
+						borderColor: color,
+						data: _.map(val, d => d.close),
+						fill: false,
+					}
+				}).value()
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Stock Price'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Value'
+						}
+					}]
+				}
+			}
+		};
+		
 		var color = Chart.helpers.color;
 		var barChartData = {
 			labels: ["MVAR", "Ant"],
@@ -247,10 +295,14 @@ window.chartColors = {
 		};
 
 		window.onload = function() {
+			var ctx = document.getElementById('line-canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+
             var ctx = document.getElementById('line2-canvas').getContext('2d');
 			window.myLine = new Chart(ctx, config2);
-            var ctx = document.getElementById('line-canvas').getContext('2d');
-			window.myLine = new Chart(ctx, config);
+            
+			var ctx = document.getElementById('line3-canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config3);
 
 			var ctx = document.getElementById('bar-canvas').getContext('2d');
 			window.myBar = new Chart(ctx, {

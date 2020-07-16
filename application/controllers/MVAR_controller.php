@@ -125,16 +125,31 @@ class MVAR_controller extends CI_Controller {
 
 	public function result($id)
 	{
+		
 		$params = $this->ap_model->get_one($id);
 
 		$n = $this->ap_model->get_n_stocks($id);
+
+		$codes = $this->ap_model->get_codes($id);
+
+		$codes_arr = [];
+
+		foreach($codes as $val) {
+			$codes_arr[] = $val["as_code"];
+		}
+		# code별 주식 데이터 가져오기 날짜는 $params에서 가져온다
+		$bt_dt_s = $params["ap_bt_dt_s"];
+		$bt_dt_e = $params["ap_bt_dt_e"];
+
+		$bt_period_stock_data = $this->sp_model->get_backtest_stock_data($bt_dt_s, $bt_dt_e, $codes_arr);
 		
 		$result_data = $this->ar_model->get_analysis_result($id);
 
 		$this->load->view("result", [
 			"params"=> $params,
 			"result_data" => $result_data,
-			"n" => $n
+			"n" => $n,
+			"bt_period_stock_data" => $bt_period_stock_data
 		]);
 
 		$this->load->view("chartjs_script");

@@ -11,6 +11,13 @@ class Stock_data_model extends CI_Model {
         $this->TB = "stock_data";
     }
 
+    public function get_backtest_stock_data($bt_dt_s, $bt_dt_e, $codes) {
+        return $this->db->from($this->TB)->select("date, name, close")->where_in("code", $codes)->where([
+            "date >=" => $bt_dt_s,
+            "date <=" => $bt_dt_e
+        ])->get()->result_array();
+    }
+
     public function get_stock_data($r_date_s, $bt_date_e, $stock_sch_content)
     {
         $stock_sch_content_str = $this->db->escape($stock_sch_content);

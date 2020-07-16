@@ -13,9 +13,10 @@
         width: 40%;
         display: inline-block;
     }
-    .item3-graph {
+    .item3-graph, .item4-graph {
         width: 80%;
     }
+
     table {
         border-collapse: collapse;
         background-color: #f0ebdf;
@@ -23,6 +24,7 @@
         width: 100%;
         border-radius: 10px;
     }
+
     .param-table {
         width:80%;
     }
@@ -53,6 +55,10 @@
     .btn > button {
         width: 100px;
         height: 30px;
+    }
+    .graph2-container {
+        align-items: center;
+        flex-direction: column;
     }
 </style>
 <body>
@@ -145,6 +151,9 @@
     </div>
     <div class="graph2-container">
         <div class="item3-graph">
+        <canvas id="line3-canvas" style="display: block; height: 350px; width: 80%;" class="chartjs-render-monitor"></canvas>
+        </div>
+        <div class="item4-graph">
         <canvas id="line2-canvas" style="display: block; height: 350px; width: 80%;" class="chartjs-render-monitor"></canvas>
         </div>
     </div>
@@ -228,10 +237,11 @@
             },
             weight: {
                 mvar: <?=json_encode($result_data["weight"]["mvar"])?>
-            }
+            },
+            bt_period_stock_data: <?=json_encode($bt_period_stock_data)?>
         }
-        global.graph_data.weight.grouped_mvar = _.groupBy(graph_data.weight.mvar, d => d.ar_name)
-        console.log(global.graph_data.weight.grouped_mvar);
+        global.graph_data.bt_period_stock_data.grouped_stock_data = _.groupBy(graph_data.bt_period_stock_data, d => d.name)
+        console.log(global.graph_data.bt_period_stock_data.grouped_stock_data);
     })(this)
 </script>
 
